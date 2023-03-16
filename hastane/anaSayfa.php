@@ -10,7 +10,6 @@
 
 
 
-
     <header>
         <div class="px-3 py-2 text-bg-dark">
           <div class="container">
@@ -33,43 +32,93 @@
     
 
 
-            <!--   Hangi giriş yapıldıysa onun adı-->  
             <?php 
             
             include("kaynak/baglanti.php");
             session_start();
 
+            //Hangi giriş yapıldıysa onun adı
+            echo ''.$_SESSION["unvan"].'';
+
+
+
+
+
+
+            //tabloların verileri
             if ($_SESSION["unvan"]=="doktor") {
               $bul="select ilac from doktor";
               $kayit=$baglanti->query($bul);
-            
             }
-
             else if ($_SESSION["unvan"]=="eczaci") {
               $bul="select ilac from eczaci";
               $bulUst="select ilac from doktor";
-
               $kayit=$baglanti->query($bul);
               $kayitUst=$baglanti->query($bulUst);
-              
             }
-            
             else if ($_SESSION["unvan"]=="hemsire") {
               $bul="select ilac from hemsire";
               $bulUst="select ilac from eczaci";
-
               $kayit=$baglanti->query($bul);
               $kayitUst=$baglanti->query($bulUst);
-            
             }
 
 
 
 
-            echo ''.$_SESSION["unvan"].'';
-            ?>
+            if (isset($_POST["btn_doktorIlac"]) ) 
+	{ 
+    //doktor ilaç istediğinde
+		$ilac=$_POST["txt_doktorIlac"];
 
-            <!--     -->
+	  $kaydet="INSERT INTO doktor (ilac) VALUES ('$ilac')";
+	  $calistir=mysqli_query($baglanti,$kaydet);
+
+	  mysqli_close($baglanti);
+		
+    header("location:anaSayfa.php");
+    
+	}
+
+
+
+  if (isset($_POST["btn_eczaciIlac"]) ) 
+	{ 
+    //eczacı butonu
+		$ilac=$_POST["txt_eczaciIlac"];
+
+	  $sil="delete from doktor where ilac='$ilac'";
+	  $calistir=mysqli_query($baglanti,$sil);
+
+    $kaydet="INSERT INTO eczaci (ilac) VALUES ('$ilac')";
+	  $calistir=mysqli_query($baglanti,$kaydet);
+
+	  mysqli_close($baglanti);
+    header("location:anaSayfa.php");
+	}
+
+
+
+
+  if (isset($_POST["btn_hemsireIlac"]) ) 
+	{ 
+    //hemsire butonu
+		$ilac=$_POST["txt_hemsireIlac"];
+
+	  $sil="delete from eczaci where ilac='$ilac'";
+	  $calistir=mysqli_query($baglanti,$sil);
+
+    $kaydet="INSERT INTO hemsire (ilac) VALUES ('$ilac')";
+	  $calistir=mysqli_query($baglanti,$kaydet);
+
+	  mysqli_close($baglanti);
+    header("location:anaSayfa.php");
+	}
+
+
+
+?>
+<!--     -->
 
             
                 </li>
@@ -83,8 +132,8 @@
             <div class="text-end">
 
             <!--  giris.html sayfasına yönlendirecek   -->
-            <form>
-              <button type="button" class="btn btn-primary">Çıkış Yap</button>
+            <form action="giris.php">
+              <button type="submit" class="btn btn-primary" name="btn_cikis">Çıkış Yap</button>
             </form>
             <!--     -->
 
@@ -103,23 +152,27 @@
         //doktor girişi yapıldığında sayfa içeriği
           if($_SESSION["unvan"]=="doktor")
           {
-            echo 'doktor
+            echo '
           <div class="row">
             <div class="col-lg-6 bg-light">
               
-        <form>
+        <form action="anaSayfa.php" method="POST">
           <div class="form-group">
-            <label for="exampleFormControlInput1">İlacı İste</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="İlaç Adı Girin">
 
-            <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="submit">İlacı İste</button>
+          <!--  ilacı isteme kısmı  -->
+
+            <label for="exampleFormControlInput1">İlacı İste</label>
+            <input type="text" class="form-control" name="txt_doktorIlac" placeholder="İlaç Adı Girin">
+
+            <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="submit" name="btn_doktorIlac">İlacı İste</button>
 
           </div>
             </div>
-            <div class="col-lg-6">
-              
-          <div class="form-group">
 
+
+
+            <div class="col-lg-6">
+          <div class="form-group">
             <label for="exampleFormControlSelect1">İstenmiş İlaçlar</label>
 
 
@@ -151,16 +204,18 @@
         //eczaci girişi yapıldığında sayfa içeriği
         if($_SESSION["unvan"]=="eczaci")
         {
-          echo 'eczaci
+          echo '
         <div class="row">
           <div class="col-lg-4 bg-light">
             
-      <form>
+
+
+      <form action="anaSayfa.php" method="POST">
         <div class="form-group">
           <label for="exampleFormControlInput1">İlacı Stokta Göster</label>
-          <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="İlaç Adı Girin">
+          <input type="text" class="form-control" id="exampleFormControlInput1" name="txt_eczaciIlac" placeholder="İlaç Adı Girin">
 
-          <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="submit">İlacı Stokta Göster</button>
+          <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="submit" name="btn_eczaciIlac">İlacı Stokta Göster</button>
 
         </div>
           </div>
@@ -170,16 +225,22 @@
 
           <label for="exampleFormControlSelect1">Doktorun İstediği İlaçlar</label>
 
-          <select class="form-control" id="exampleFormControlSelect1">
+
+
+          <select class="form-control" id="exampleFormControlSelect1" name="taskOption">
           ';
           if ($kayitUst->num_rows>0) {
+            $i=1;
             while ($satir=$kayitUst->fetch_assoc()) {
-              echo '<option>'. $satir["ilac"]   .'</option>';
+              echo '<option value="deger'.$i.'">'. $satir["ilac"]   .'</option>';
             }
           }
           echo '
 
           </select>
+          <!--   tablodan çekme kodunu yapamadım
+          <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="btn_eczaciTablodanCek">İlaç İsmini Al</button>
+          -->
         </div>
         
           </div>
@@ -212,17 +273,17 @@
         //hemsire girişi yapıldığında sayfa içeriği
         if($_SESSION["unvan"]=="hemsire")
         {
-          echo 'hemsire
+          echo '
         
           <div class="row ">
           <div class="col-lg-4 bg-light">
             
-      <form>
+      <form  action="anaSayfa.php" method="POST">
         <div class="form-group">
           <label for="exampleFormControlInput1">İlacı Al</label>
-          <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="İlaç Adı Girin">
+          <input type="text" class="form-control" id="exampleFormControlInput1" name="txt_hemsireIlac" placeholder="İlaç Adı Girin">
 
-          <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" type="submit">İlacı Al</button>
+          <button class="w-50 py-2 mb-2 btn btn-outline-dark rounded-1" name="btn_hemsireIlac" type="submit">İlacı Al</button>
 
         </div>
           </div>

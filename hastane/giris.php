@@ -16,9 +16,23 @@ if (isset($_POST["submit"]) )
 
 	if ($kayitSayisi>0) {
 		session_start();
-		$ilgiliKayit=mysqli_fetch_assoc($calistir);
-		$_SESSION["unvan"]=$ilgiliKayit["unvan"];
-		header("location:anaSayfa.php");
+
+    if($ilgiliKayit["id"]==1)//admin mi diye kontrol ediyor
+    {
+      echo "asdasd";
+      header("location:adminPanel.php");
+    }
+
+    else
+    {//admin değilse 
+		  $ilgiliKayit=mysqli_fetch_assoc($calistir);
+		  $_SESSION["unvan"]=$ilgiliKayit["unvan"];
+      header("location:anaSayfa.php");
+      
+    }
+
+
+
 	}
 	else{
 		echo '<div>Böyle Bir Kullanıcı bulunamadı!</div>';
@@ -54,19 +68,6 @@ else if(isset($_POST["submit3"]))
   header("location:anaSayfa.php");
 }
 ?>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
