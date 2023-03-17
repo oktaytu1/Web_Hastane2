@@ -17,16 +17,18 @@ if (isset($_POST["submit"]) )
 	if ($kayitSayisi>0) {
 		session_start();
 
+    $ilgiliKayit=mysqli_fetch_assoc($calistir);
+    $_SESSION["id"]=$ilgiliKayit["id"];
+
     if($ilgiliKayit["id"]==1)//admin mi diye kontrol ediyor
     {
-      echo "asdasd";
-      header("location:adminPanel.php");
+      header("location:admin.php");
     }
 
     else
     {//admin değilse 
 		  $ilgiliKayit=mysqli_fetch_assoc($calistir);
-		  $_SESSION["unvan"]=$ilgiliKayit["unvan"];
+		  $_SESSION["unvan"]=$unvan;
       header("location:anaSayfa.php");
       
     }

@@ -51,7 +51,7 @@
               $kayit=$baglanti->query($bul);
             }
             else if ($_SESSION["unvan"]=="eczaci") {
-              $bul="select ilac from eczaci";
+              $bul="select ilac from eczaci  where ilac='ecz2'";
               $bulUst="select ilac from doktor";
               $kayit=$baglanti->query($bul);
               $kayitUst=$baglanti->query($bulUst);
